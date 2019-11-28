@@ -7,9 +7,9 @@ function install_deps(){
 }
 
 function build_libimobiledevice(){
-    #libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
+    libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
     #libs=( "libplist" "libusbmuxd" "libimobiledevice" )
-    libs=( "idevicerestore" )
+    #libs=( "idevicerestore" )
     
     buildlibs() {
         for i in "${libs[@]}"
@@ -27,7 +27,7 @@ function build_libimobiledevice(){
             echo -e "\033[1;32mBuilding $i..."
             if [[ -e $(make) ]]; then
                 echo -e "\033[1;32mInstalling $i..."
-                #sudo make install
+                sudo make install
             fi
             cd ..
         done
