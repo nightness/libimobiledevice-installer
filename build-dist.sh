@@ -3,7 +3,7 @@
 function install_deps(){
     echo -e "\033[1;33m[*] Installing package dependencies...\033[1;32m"
     sudo apt-get remove libimobiledevice-utils libimobiledevice-dev
-    sudo apt-get install git libtool m4 automake autoconf libxml2-dev python2.7-dev libusb-dev \
+    sudo apt-get install git libtool m4 automake autoconf libxml2-dev python2.7-dev libusb-dev cython \
         libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils
     echo -e "\033[1;33m[*] Package dependencies installed"
 }
