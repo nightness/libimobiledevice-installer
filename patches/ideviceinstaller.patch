@@ -1,0 +1,171 @@
+*** ideviceinstaller-1.1.0.orig/src/ideviceinstaller.c	2014-10-14 20:10:49.000000000 -0500
+--- ideviceinstaller-1.1.0/src/ideviceinstaller.c	2019-11-26 23:13:39.887707952 -0600
+***************
+*** 851,857 ****
+  					struct zip_stat zs;
+  					zip_stat_init(&zs);
+  					if (zip_stat_index(zf, i, 0, &zs) != 0) {
+! 						fprintf(stderr, "ERROR: zip_stat_index %" PRIu64 " failed!\n", i);
+  						free(dstpath);
+  						dstpath = NULL;
+  						zip_fclose(zfile);
+--- 851,857 ----
+  					struct zip_stat zs;
+  					zip_stat_init(&zs);
+  					if (zip_stat_index(zf, i, 0, &zs) != 0) {
+! 						fprintf(stderr, "ERROR: zip_stat_index %" PRIu64 " failed!\n", (long long unsigned int)i);
+  						free(dstpath);
+  						dstpath = NULL;
+  						zip_fclose(zfile);
+***************
+*** 862,868 ****
+  					dstpath = NULL;
+  
+  					zip_uint64_t zfsize = 0;
+! 					while (zfsize < zs.size) {
+  						zip_int64_t amount = zip_fread(zfile, buf, sizeof(buf));
+  						if (amount == 0) {
+  							break;
+--- 862,868 ----
+  					dstpath = NULL;
+  
+  					zip_uint64_t zfsize = 0;
+! 					while (zfsize < (zip_uint64_t)zs.size) {
+  						zip_int64_t amount = zip_fread(zfile, buf, sizeof(buf));
+  						if (amount == 0) {
+  							break;
+***************
+*** 870,876 ****
+  
+  						if (amount > 0) {
+  							uint32_t written, total = 0;
+! 							while (total < amount) {
+  								written = 0;
+  								if (afc_file_write(afc, af, buf, amount, &written) !=
+  									AFC_E_SUCCESS) {
+--- 870,876 ----
+  
+  						if (amount > 0) {
+  							uint32_t written, total = 0;
+! 							while (total < (unsigned int)amount) {
+  								written = 0;
+  								if (afc_file_write(afc, af, buf, amount, &written) !=
+  									AFC_E_SUCCESS) {
+***************
+*** 879,886 ****
+  								}
+  								total += written;
+  							}
+! 							if (total != amount) {
+! 								fprintf(stderr, "Error: wrote only %d of %" PRIi64 "\n", total, amount);
+  								afc_file_close(afc, af);
+  								zip_fclose(zfile);
+  								free(dstpath);
+--- 879,886 ----
+  								}
+  								total += written;
+  							}
+! 							if (total != (unsigned int)amount) {
+! 								fprintf(stderr, "Error: wrote only %d of %" PRIi64 "\n", total, (long long int)amount);
+  								afc_file_close(afc, af);
+  								zip_fclose(zfile);
+  								free(dstpath);
+***************
+*** 1055,1068 ****
+  		if (cmd == CMD_INSTALL) {
+  			printf("Installing '%s'\n", bundleidentifier);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 			instproxy_install(ipc, pkgname, client_opts, status_cb, NULL);
+  #else
+  			instproxy_install(ipc, pkgname, client_opts, status_cb);
+  #endif
+  		} else {
+  			printf("Upgrading '%s'\n", bundleidentifier);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 			instproxy_upgrade(ipc, pkgname, client_opts, status_cb, NULL);
+  #else
+  			instproxy_upgrade(ipc, pkgname, client_opts, status_cb);
+  #endif
+--- 1055,1068 ----
+  		if (cmd == CMD_INSTALL) {
+  			printf("Installing '%s'\n", bundleidentifier);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 			instproxy_install(ipc, pkgname, client_opts, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  			instproxy_install(ipc, pkgname, client_opts, status_cb);
+  #endif
+  		} else {
+  			printf("Upgrading '%s'\n", bundleidentifier);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 			instproxy_upgrade(ipc, pkgname, client_opts, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  			instproxy_upgrade(ipc, pkgname, client_opts, status_cb);
+  #endif
+***************
+*** 1074,1080 ****
+  	} else if (cmd == CMD_UNINSTALL) {
+  		printf("Uninstalling '%s'\n", appid);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_uninstall(ipc, appid, NULL, status_cb, NULL);
+  #else
+  		instproxy_uninstall(ipc, appid, NULL, status_cb);
+  #endif
+--- 1074,1080 ----
+  	} else if (cmd == CMD_UNINSTALL) {
+  		printf("Uninstalling '%s'\n", appid);
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_uninstall(ipc, appid, NULL, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  		instproxy_uninstall(ipc, appid, NULL, status_cb);
+  #endif
+***************
+*** 1250,1256 ****
+  		}
+  
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_archive(ipc, appid, client_opts, status_cb, NULL);
+  #else
+  		instproxy_archive(ipc, appid, client_opts, status_cb);
+  #endif
+--- 1250,1256 ----
+  		}
+  
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_archive(ipc, appid, client_opts, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  		instproxy_archive(ipc, appid, client_opts, status_cb);
+  #endif
+***************
+*** 1388,1394 ****
+  		goto leave_cleanup;
+  	} else if (cmd == CMD_RESTORE) {
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_restore(ipc, appid, NULL, status_cb, NULL);
+  #else
+  		instproxy_restore(ipc, appid, NULL, status_cb);
+  #endif
+--- 1388,1394 ----
+  		goto leave_cleanup;
+  	} else if (cmd == CMD_RESTORE) {
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_restore(ipc, appid, NULL, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  		instproxy_restore(ipc, appid, NULL, status_cb);
+  #endif
+***************
+*** 1396,1402 ****
+  		notification_expected = 1;
+  	} else if (cmd == CMD_REMOVE_ARCHIVE) {
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_remove_archive(ipc, appid, NULL, status_cb, NULL);
+  #else
+  		instproxy_remove_archive(ipc, appid, NULL, status_cb);
+  #endif
+--- 1396,1402 ----
+  		notification_expected = 1;
+  	} else if (cmd == CMD_REMOVE_ARCHIVE) {
+  #ifdef HAVE_LIBIMOBILEDEVICE_1_1
+! 		instproxy_remove_archive(ipc, appid, NULL, (instproxy_status_cb_t)status_cb, NULL);
+  #else
+  		instproxy_remove_archive(ipc, appid, NULL, status_cb);
+  #endif
