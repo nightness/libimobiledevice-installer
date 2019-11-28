@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function install_deps(){
+function install_dist(){
     sudo apt-get remove libimobiledevice-utils libimobiledevice-dev
     sudo apt-get install git libtool m4 automake autoconf libxml2-dev python2.7-dev libusb-dev \
         libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils
@@ -33,14 +33,14 @@ function build_libimobiledevice(){
         done
     }
     
-    # Create a new deps folder
-    if [ -d `pwd`/deps ]; then
-        echo "[*] Removing old deps directory"
-        rm -rf ./deps
+    # Create a new dist folder
+    if [ -d `pwd`/dist ]; then
+        echo "[*] Removing old dist directory"
+        rm -rf ./dist
     fi
-    echo "[*] Creating new deps directory"
-    mkdir deps
-    cd deps
+    echo "[*] Creating new dist directory"
+    mkdir dist
+    cd dist
     buildlibs
     if [[ -e $(which ldconfig) ]]; then
         sudo ldconfig
@@ -49,7 +49,7 @@ function build_libimobiledevice(){
 }
 
 echo "[*] Installing package dependencies..."
-install_deps
+install_dist
 echo "[*] Package dependencies installed"
 
 echo "[*] Building and installing libplist, libusbmuxd, libimobiledevice, libirecovery, idevicerestore..."
