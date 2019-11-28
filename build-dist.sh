@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function install_dist(){
+function install_deps(){
     sudo apt-get remove libimobiledevice-utils libimobiledevice-dev
     sudo apt-get install git libtool m4 automake autoconf libxml2-dev python2.7-dev libusb-dev \
         libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils
@@ -49,7 +49,7 @@ function build_libimobiledevice(){
 }
 
 echo "[*] Installing package dependencies..."
-install_dist
+install_deps
 echo "[*] Package dependencies installed"
 
 echo "[*] Building and installing libplist, libusbmuxd, libimobiledevice, libirecovery, idevicerestore..."
