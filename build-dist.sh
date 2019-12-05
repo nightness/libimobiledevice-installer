@@ -20,10 +20,6 @@ function build_libimobiledevice(){
             echo -e "\033[1;33m[*] Configuring $i...\033[1;32m"
             autoreconf --install
             ./autogen.sh
-            if [ "${i}" = "libimobiledevice" ]; then
-                echo -e "\033[1;33m[*] Patching $i...\033[1;32m"
-                patch -i ../../patches/cython.patch ./cython/debugserver.pxi > /dev/null 2> /dev/null
-            fi
             echo -e "\033[1;33m[*] Building $i...\033[1;32m"
             make > /dev/null
             echo -e "\033[1;33m[*] Installing $i...\033[1;32m"
