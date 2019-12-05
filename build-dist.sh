@@ -2,14 +2,14 @@
 
 function install_deps(){
     echo -e "\033[1;33m[*] Installing package dependencies...\033[1;32m"
-    sudo apt-get remove libimobiledevice-utils libimobiledevice-dev
+    sudo apt-get remove libimobiledevice-utils libimobiledevice-dev libusbmuxd-dev
     sudo apt-get install git libtool m4 automake autoconf libxml2-dev python2.7-dev libusb-dev cython \
         libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils
     echo -e "\033[1;33m[*] Package dependencies installed"
 }
 
 function build_libimobiledevice(){
-    libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
+    libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" "usbmuxd" "libideviceactivation" "ideviceinstaller" "ifuse" )
     
     buildlibs() {
         for i in "${libs[@]}"
@@ -28,7 +28,7 @@ function build_libimobiledevice(){
         done
     }
     
-    echo -e "\033[1;33m[*] Building and installing libplist, libusbmuxd, libimobiledevice, libirecovery, idevicerestore..."
+    echo -e "\033[1;33m[*] Building and installing libplist, libusbmuxd, libimobiledevice, libirecovery, idevicerestore, usbmuxd, libideviceactivation, ideviceinstaller, ifuse..."
     # Create a new dist folder
     if [ -d `pwd`/dist ]; then
         echo -e "\033[1;31m[*] Removing old dist directory"
