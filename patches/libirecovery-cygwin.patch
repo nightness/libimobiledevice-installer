@@ -1,0 +1,37 @@
+diff -cr libirecovery.orig/configure.ac libirecovery/configure.ac
+*** libirecovery.orig/configure.ac	2019-12-09 17:01:50.077091100 -0600
+--- libirecovery/configure.ac	2019-12-09 16:33:39.840410400 -0600
+***************
+*** 70,78 ****
+  	;;
+  	cygwin*)
+  		AC_MSG_RESULT([${host_os}])
+! 		CC=gcc-3
+! 		CFLAGS+=" -mno-cygwin"
+! 		GLOBAL_LDFLAGS+=" -static-libgcc -lkernel32 -lmsvcrt -lsetupapi"
+  		win32=true
+  	;;
+  	*)
+--- 70,77 ----
+  	;;
+  	cygwin*)
+  		AC_MSG_RESULT([${host_os}])
+! 		CFLAGS+=" -I/usr/include/libusb-1.0"
+! 		GLOBAL_LDFLAGS+=" -static-libgcc -lkernel32 -lsetupapi"
+  		win32=true
+  	;;
+  	*)
+diff -cr libirecovery.orig/src/libirecovery.c libirecovery/src/libirecovery.c
+*** libirecovery.orig/src/libirecovery.c	2019-12-09 17:01:50.123966300 -0600
+--- libirecovery/src/libirecovery.c	2019-12-09 16:30:12.238501600 -0600
+***************
+*** 60,65 ****
+--- 60,67 ----
+  #endif
+  
+  #ifdef WIN32
++ #include <windows.h>
++ #include <setupapi.h>
+  #define IRECV_API __declspec( dllexport )
+  #else
+  #ifdef HAVE_FVISIBILITY
