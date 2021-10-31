@@ -10,7 +10,7 @@ function install_deps(){
 }
 
 function build_libimobiledevice(){
-    libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" "usbmuxd" "libideviceactivation" "ideviceinstaller" "ifuse" )
+    libs=( "libplist" "libimobiledevice-glue" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" "usbmuxd" "libideviceactivation" "ideviceinstaller" "ifuse" )
     
     buildlibs() {
         for i in "${libs[@]}"
