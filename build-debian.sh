@@ -1,14 +1,16 @@
 #!/bin/bash
+set -e
 
 PREFIX="${1:-/usr/local}"
 
 function install_deps(){
-    echo -e "\033[1;33m[*] Installing package dependencies...\033[1;32m"
-    sudo apt-get remove libimobiledevice-utils libimobiledevice-dev libusbmuxd-dev
-    sudo apt-get install git libtool m4 automake autoconf libxml2-dev libusb-dev \
-        libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils \
-	libzip-dev libfuse-dev libcurl4-openssl-dev
-    echo -e "\033[1;33m[*] Package dependencies installed"
+    echo -e "\033[1;33m[*] Removing conflicting system packages...\033[1;32m"
+    sudo apt-get remove -y libimobiledevice-utils libimobiledevice-dev libusbmuxd-dev 2>/dev/null || true
+    echo -e "\033[1;33m[*] Installing build dependencies...\033[1;32m"
+    sudo apt-get install -y git pkg-config libtool m4 automake autoconf \
+        libxml2-dev libusb-1.0-0-dev libssl-dev libreadline-dev \
+        libzip-dev libfuse3-dev libcurl4-openssl-dev
+    echo -e "\033[1;33m[*] Build dependencies installed"
 }
 
 function build_libimobiledevice(){
@@ -17,7 +19,9 @@ function build_libimobiledevice(){
     export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
     # Determine if sudo is needed for the install prefix
-    if [ -w "${PREFIX}" ] 2>/dev/null || mkdir -p "${PREFIX}" 2>/dev/null; then
+    mkdir -p "${PREFIX}/lib" 2>/dev/null || true
+    if touch "${PREFIX}/lib/.write_test" 2>/dev/null; then
+        rm -f "${PREFIX}/lib/.write_test"
         SUDO=""
     else
         SUDO="sudo"
