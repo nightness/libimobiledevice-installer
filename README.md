@@ -56,7 +56,7 @@ All scripts clone and build libraries from the [libimobiledevice](https://github
 
 **macOS:** [Homebrew](https://brew.sh) (dependencies are installed automatically via `brew install`)
 
-**Debian/Ubuntu:** Dependencies are installed automatically via `apt-get`. The script installs build tools (git, libtool, automake, autoconf) and required development libraries (libusb, libssl, libreadline, libplist, libzip, libfuse, libcurl, etc.).
+**Debian/Ubuntu:** Dependencies are installed automatically via `apt-get`. The script installs build tools (git, pkg-config, libtool, automake, autoconf) and external development libraries (libxml2, libusb, libssl, libreadline, libzip, libfuse3, libcurl). All libimobiledevice-stack libraries are built from source.
 
 **Cygwin:** Dependencies must be pre-installed through the Cygwin setup program.
 
