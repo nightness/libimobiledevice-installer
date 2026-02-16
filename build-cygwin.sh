@@ -1,7 +1,19 @@
 #!/bin/bash
+
+PREFIX="${1:-/usr}"
+
 function build_libimobiledevice(){
-    libs=( "libplist" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
-   
+    libs=( "libplist" "libimobiledevice-glue" "libtatsu" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
+
+    export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+
+    # Determine if sudo is needed for the install prefix
+    if [ -w "${PREFIX}" ] 2>/dev/null || mkdir -p "${PREFIX}" 2>/dev/null; then
+        SUDO=""
+    else
+        SUDO="sudo"
+    fi
+
     buildlibs() {
         for i in "${libs[@]}"
         do
@@ -10,16 +22,17 @@ function build_libimobiledevice(){
             cd $i
             echo -e "\033[1;33m[*] Configuring $i...\033[1;32m"
             autoreconf --install
-            ./autogen.sh --prefix=/usr --without-cython
+            ./autogen.sh --prefix="${PREFIX}" --without-cython
             echo -e "\033[1;33m[*] Building $i...\033[1;32m"
             make > /dev/null
             echo -e "\033[1;33m[*] Installing $i...\033[1;32m"
-            sudo make install > /dev/null
+            $SUDO make install > /dev/null
             cd ..
         done
     }
    
-    echo -e "\033[1;33m[*] Building and installing libplist, libusbmuxd, libimobiledevice, libirecovery, idevicerestore..."
+    echo -e "\033[1;33m[*] Building and installing libplist, libimobiledevice-glue, libtatsu, libusbmuxd, libimobiledevice, libirecovery, idevicerestore..."
+    echo -e "\033[1;33m[*] Install prefix: ${PREFIX}"
     # Create a new dist folder
     if [ -d `pwd`/dist ]; then
         echo -e "\033[1;31m[*] Removing old dist directory"

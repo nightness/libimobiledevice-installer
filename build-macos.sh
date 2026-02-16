@@ -3,18 +3,19 @@
 PREFIX="${1:-/usr/local}"
 
 function install_deps(){
-    echo -e "\033[1;33m[*] Installing package dependencies...\033[1;32m"
-    sudo apt-get remove libimobiledevice-utils libimobiledevice-dev libusbmuxd-dev
-    sudo apt-get install git libtool m4 automake autoconf libxml2-dev libusb-dev \
-        libusb-1.0-0-dev libssl-dev libreadline-dev libplist-dev libplist++-dev libplist++3v5 libplist-utils \
-	libzip-dev libfuse-dev libcurl4-openssl-dev
-    echo -e "\033[1;33m[*] Package dependencies installed"
+    echo -e "\033[1;33m[*] Installing Homebrew dependencies...\033[1;32m"
+    brew install libtool automake autoconf pkg-config libusb openssl@3 libzip readline
+    echo -e "\033[1;33m[*] Homebrew dependencies installed"
 }
 
 function build_libimobiledevice(){
-    libs=( "libplist" "libimobiledevice-glue" "libtatsu" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" "usbmuxd" "libideviceactivation" "ideviceinstaller" "ifuse" )
+    libs=( "libplist" "libimobiledevice-glue" "libtatsu" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" "libideviceactivation" "ideviceinstaller" )
 
-    export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    # Use Homebrew's pkg-config to avoid MacPorts conflict at /opt/local/bin
+    export PKG_CONFIG="$(brew --prefix)/bin/pkg-config"
+
+    # Add keg-only packages and custom prefix to PKG_CONFIG_PATH
+    export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig:$(brew --prefix readline)/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
     # Determine if sudo is needed for the install prefix
     if [ -w "${PREFIX}" ] 2>/dev/null || mkdir -p "${PREFIX}" 2>/dev/null; then
@@ -39,8 +40,8 @@ function build_libimobiledevice(){
             cd ..
         done
     }
-    
-    echo -e "\033[1;33m[*] Building and installing libplist, libimobiledevice-glue, libtatsu, libusbmuxd, libimobiledevice, libirecovery, idevicerestore, usbmuxd, libideviceactivation, ideviceinstaller, ifuse..."
+
+    echo -e "\033[1;33m[*] Building and installing libplist, libimobiledevice-glue, libtatsu, libusbmuxd, libimobiledevice, libirecovery, idevicerestore, libideviceactivation, ideviceinstaller..."
     echo -e "\033[1;33m[*] Install prefix: ${PREFIX}"
     # Create a new dist folder
     if [ -d `pwd`/dist ]; then
@@ -51,11 +52,9 @@ function build_libimobiledevice(){
     mkdir dist
     cd dist
     buildlibs
-    $SUDO ldconfig &>/dev/null
     cd ..
     echo -e "\033[1;33m[*] Finished"
 }
 
 install_deps
 build_libimobiledevice
-
