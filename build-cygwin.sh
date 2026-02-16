@@ -2,6 +2,36 @@
 
 PREFIX="${1:-/usr}"
 
+function check_deps(){
+    echo -e "\033[1;33m[*] Checking prerequisites...\033[0m"
+    missing=()
+
+    # Build tools (check via command existence)
+    for cmd in git libtool automake autoconf make pkg-config; do
+        if ! command -v "$cmd" &>/dev/null; then
+            missing+=("$cmd")
+        fi
+    done
+
+    # Dev libraries (check via pkg-config)
+    for lib in libusb-1.0 openssl libcurl readline; do
+        if ! pkg-config --exists "$lib" 2>/dev/null; then
+            missing+=("$lib (dev)")
+        fi
+    done
+
+    if [ ${#missing[@]} -ne 0 ]; then
+        echo -e "\033[1;31m[!] Missing prerequisites:\033[0m"
+        for dep in "${missing[@]}"; do
+            echo -e "\033[1;31m    - $dep\033[0m"
+        done
+        echo -e "\033[1;31m[!] Please install the missing packages via Cygwin setup and re-run.\033[0m"
+        exit 1
+    fi
+
+    echo -e "\033[1;33m[*] All prerequisites found\033[0m"
+}
+
 function build_libimobiledevice(){
     libs=( "libplist" "libimobiledevice-glue" "libtatsu" "libusbmuxd" "libimobiledevice" "libirecovery" "idevicerestore" )
 
@@ -45,4 +75,6 @@ function build_libimobiledevice(){
     cd ..
     echo -e "\033[1;33m[*] Finished"
 }
+
+check_deps
 build_libimobiledevice
